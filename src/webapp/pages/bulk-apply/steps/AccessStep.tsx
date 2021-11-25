@@ -89,7 +89,7 @@ const mapSharingRules = (settings?: SharingSetting[]): SharingRule[] | undefined
 
 const showOptions = {
     title: false,
-    dataSharing: false,
+    dataSharing: true,
     publicSharing: true,
     externalSharing: false,
     permissionPicker: true,
