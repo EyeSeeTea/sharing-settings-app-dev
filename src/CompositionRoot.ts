@@ -1,6 +1,7 @@
 import { Instance } from "./data/entities/Instance";
 import { InstanceDefaultRepository } from "./data/repositories/InstanceDefaultRepository";
 import { MetadataD2ApiRepository } from "./data/repositories/MetadataD2ApiRepository";
+import { GlobalExcludedDependenciesD2ApiRepository } from "./data/repositories/GlobalExcludedDependenciesD2ApiRepository";
 import { GetCurrentUserUseCase } from "./domain/usecases/instance/GetCurrentUserUseCase";
 import { GetInstanceVersionUseCase } from "./domain/usecases/instance/GetInstanceVersionUseCase";
 import { SearchUsersUseCase } from "./domain/usecases/instance/SearchUsersUseCase";
@@ -9,11 +10,13 @@ import { GetModelNameUseCase } from "./domain/usecases/metadata/GetModelNameUseC
 import { ImportMetadataUseCase } from "./domain/usecases/metadata/ImportMetadataUseCase";
 import { ListDependenciesUseCase } from "./domain/usecases/metadata/ListDependenciesUseCase";
 import { ListMetadataUseCase } from "./domain/usecases/metadata/ListMetadataUseCase";
+import { SaveExcludedDependenciesUseCase } from "./domain/usecases/excludedDependencies/SaveExcludedDependenciesUseCase";
+import { ListExcludedDependenciesUseCase } from "./domain/usecases/excludedDependencies/ListExcludedDependenciesUseCase";
 
 export function getCompositionRoot(instance: Instance) {
     const instanceRepository = new InstanceDefaultRepository(instance);
     const metadataRepository = new MetadataD2ApiRepository(instance);
-
+    const globalExcludedDependenciesRepository = new GlobalExcludedDependenciesD2ApiRepository(instance, instanceRepository);
     return {
         instance: getExecute({
             getCurrentUser: new GetCurrentUserUseCase(instanceRepository),
@@ -26,6 +29,10 @@ export function getCompositionRoot(instance: Instance) {
             applySharingSettings: new ApplySharingSettingsUseCase(metadataRepository),
             getModelName: new GetModelNameUseCase(metadataRepository),
             import: new ImportMetadataUseCase(metadataRepository),
+        }),
+        excludedDependencies: getExecute({
+            list: new ListExcludedDependenciesUseCase(globalExcludedDependenciesRepository),
+            save: new SaveExcludedDependenciesUseCase(globalExcludedDependenciesRepository)
         }),
     };
 }

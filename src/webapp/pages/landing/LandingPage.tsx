@@ -24,6 +24,7 @@ export const LandingPage: React.FC = () => {
             children: [
                 {
                     name: i18n.t("Settings"),
+                    description: i18n.t("Exclude metadata items globally"),
                     listAction: () => history.push("/settings"),
                 },
             ],
