@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2021-09-08T09:56:59.289Z\n"
-"PO-Revision-Date: 2021-09-08T09:56:59.289Z\n"
+"POT-Creation-Date: 2022-10-13T16:13:49.069Z\n"
+"PO-Revision-Date: 2022-10-13T16:13:49.069Z\n"
 
 msgid "Unknown model"
 msgstr ""
@@ -159,4 +159,13 @@ msgid "Edit sharing settings to data sets, programs and dashboards."
 msgstr ""
 
 msgid "Settings"
+msgstr ""
+
+msgid "Exclude metadata items globally"
+msgstr ""
+
+msgid "Global exclusion settings"
+msgstr ""
+
+msgid "Save global excluded dependencies"
 msgstr ""

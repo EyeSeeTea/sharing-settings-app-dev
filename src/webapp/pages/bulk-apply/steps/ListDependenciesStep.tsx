@@ -22,8 +22,8 @@ import { MetadataSharingWizardStepProps } from "../SharingWizardSteps";
 export const ListDependenciesStep: React.FC<MetadataSharingWizardStepProps> = ({ builder, updateBuilder }) => {
     const { compositionRoot } = useAppContext();
     const snackbar = useSnackbar();
-
     const [rows, setRows] = useState<MetadataItem[]>([]);
+    const [globalExclusions, setGlobalExclusions] = useState<string[]>([]);
     const [filteredRows, setFilteredRows] = useState<MetadataItem[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [selection, setSelection] = useState<TableSelection[]>([]);
@@ -67,7 +67,11 @@ export const ListDependenciesStep: React.FC<MetadataSharingWizardStepProps> = ({
                 text: i18n.t("Include dependency"),
                 multiple: true,
                 icon: <AddCircleOutlineIcon />,
-                isActive: (rows: MetadataItem[]) => _.every(rows, row => builder.excludedDependencies.includes(row.id)),
+                isActive: (rows: MetadataItem[]) =>
+                    _.every(
+                        rows,
+                        row => builder.excludedDependencies.includes(row.id) && !globalExclusions.includes(row.id)
+                    ),
                 onClick: (selection: string[]) => {
                     updateBuilder(builder => ({
                         ...builder,
@@ -76,7 +80,7 @@ export const ListDependenciesStep: React.FC<MetadataSharingWizardStepProps> = ({
                 },
             },
         ],
-        [builder, updateBuilder]
+        [builder.excludedDependencies, globalExclusions, updateBuilder]
     );
 
     const onTableChange = useCallback(({ selection }: TableState<Ref>) => setSelection(selection), [setSelection]);
@@ -135,6 +139,20 @@ export const ListDependenciesStep: React.FC<MetadataSharingWizardStepProps> = ({
             error => snackbar.error(error)
         );
     }, [builder, compositionRoot, snackbar]);
+
+    useEffect(() => {
+        compositionRoot.excludedDependencies.list().run(
+            data => {
+                const plainIds = data.map(({ id }) => id);
+                setGlobalExclusions(plainIds);
+                updateBuilder(builder => ({
+                    ...builder,
+                    excludedDependencies: _.uniq([...builder.excludedDependencies, ...plainIds]),
+                }));
+            },
+            error => snackbar.error(error)
+        );
+    }, [compositionRoot.excludedDependencies, snackbar, updateBuilder]);
 
     const filterComponents = (
         <Dropdown<MetadataModel>
