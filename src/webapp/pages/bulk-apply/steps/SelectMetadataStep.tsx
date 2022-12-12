@@ -103,4 +103,8 @@ const filterModels: DropdownOption<MetadataModel>[] = [
     { id: "dataSets", name: i18n.t("Data Sets") },
     { id: "dashboards", name: i18n.t("Dashboards") },
     { id: "programs", name: i18n.t("Programs") },
+    { id: "dataElementGroups", name: i18n.t("Data Element Group") },
+    { id: "dataElementGroupSets", name: i18n.t("Data Element Group Set") },
+    { id: "organisationUnitGroups", name: i18n.t("Organisation Unit Group") },
+    { id: "organisationUnitGroupSets", name: i18n.t("Organisation Unit Group Set") },
 ];

@@ -20,7 +20,11 @@ export type MetadataModel =
     | "optionSets"
     | "legendSets"
     | "programStages"
-    | "programIndicators";
+    | "programIndicators"
+    | "dataElementGroups"
+    | "dataElementGroupSets"
+    | "organisationUnitGroups"
+    | "organisationUnitGroupSets";
 
 export const displayName: Record<string, string> = {
     dataSets: "Data Sets",
@@ -42,6 +46,10 @@ export const displayName: Record<string, string> = {
     legendSets: "Legend Sets",
     programStages: "Program Stages",
     programIndicators: "Program Indicators",
+    dataElementGroups: "Data Element Group",
+    dataElementGroupSets: "Data Element Group Set",
+    organisationUnitGroups: "Organisation Unit Group",
+    organisationUnitGroupSets: "Organisation Unit Group Set",
 };
 export type MetadataPayload = Record<string, MetadataItem[]>;
 

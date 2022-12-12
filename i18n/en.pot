@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2021-09-08T09:56:59.289Z\n"
-"PO-Revision-Date: 2021-09-08T09:56:59.289Z\n"
+"POT-Creation-Date: 2022-12-12T11:48:19.941Z\n"
+"PO-Revision-Date: 2022-12-12T11:48:19.941Z\n"
 
 msgid "Unknown model"
 msgstr ""
@@ -113,6 +113,15 @@ msgstr ""
 msgid "Global sharing settings"
 msgstr ""
 
+msgid "Warning"
+msgstr ""
+
+msgid "Continue"
+msgstr ""
+
+msgid "Go back"
+msgstr ""
+
 msgid "Name"
 msgstr ""
 
@@ -131,7 +140,13 @@ msgstr ""
 msgid "User Groups"
 msgstr ""
 
+msgid "Exclusion Status"
+msgstr ""
+
 msgid "Exclude dependency"
+msgstr ""
+
+msgid "Exclude all but selected"
 msgstr ""
 
 msgid "Include dependency"
@@ -150,6 +165,18 @@ msgid "Dashboards"
 msgstr ""
 
 msgid "Programs"
+msgstr ""
+
+msgid "Data Element Group"
+msgstr ""
+
+msgid "Data Element Group Set"
+msgstr ""
+
+msgid "Organisation Unit Group"
+msgstr ""
+
+msgid "Organisation Unit Group Set"
 msgstr ""
 
 msgid "Apply update"
