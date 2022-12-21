@@ -15,6 +15,10 @@ import { getD2APiFromInstance } from "../../utils/d2-api";
 import { apiToFuture } from "../../utils/futures";
 import { Instance } from "../entities/Instance";
 
+interface FullMetadataResponse extends MetadataResponse {
+    response?: MetadataResponse;
+}
+
 export class MetadataD2ApiRepository implements MetadataRepository {
     private api: D2Api;
 
@@ -130,8 +134,9 @@ function extractExtraDependencies(payload: MetadataPayload): string[] {
         .value();
 }
 
-function buildMetadataImportResult(response: MetadataResponse): ImportResult {
-    const { status, stats, typeReports = [] } = response;
+function buildMetadataImportResult(response: FullMetadataResponse): ImportResult {
+    const { status, stats, typeReports = [] } = response.response ?? response;
+
     const typeStats = typeReports.flatMap(({ klass, stats }) => formatStats(stats, getClassName(klass)));
 
     const messages = typeReports.flatMap(({ objectReports = [] }) =>
