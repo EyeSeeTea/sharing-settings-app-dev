@@ -1,4 +1,4 @@
-import i18n from "@dhis2/d2-i18n";
+import i18n from "../../../utils/i18n";
 import { ConfirmationDialog, ConfirmationDialogProps } from "@eyeseetea/d2-ui-components";
 import React, { useCallback, useState } from "react";
 import { SharingUpdate } from "../../../domain/entities/SharingUpdate";

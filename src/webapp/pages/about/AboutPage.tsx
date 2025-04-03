@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import i18n from "../../../locales";
+import i18n from "../../../utils/i18n";
 import { IconButton, Typography } from "@material-ui/core";
 import HomeIcon from "@material-ui/icons/Home";
 import { NavLink } from "react-router-dom";

@@ -1,6 +1,6 @@
 import { FormControl, InputLabel, MenuItem, Select } from "@material-ui/core";
 import _ from "lodash";
-import i18n from "@dhis2/d2-i18n";
+import i18n from "../../../utils/i18n";
 import styled from "styled-components";
 
 export interface DropdownOption<T extends string = string> {

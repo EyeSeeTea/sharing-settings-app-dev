@@ -1,6 +1,6 @@
 import { SharingSummary as SharingSummaryI } from "../../../domain/entities/SharingSummary";
 import { NamedRef } from "../../../domain/entities/Ref";
-import i18n from "../../../locales";
+import i18n from "../../../utils/i18n";
 import styled from "styled-components";
 
 interface SharingSummaryProps {
