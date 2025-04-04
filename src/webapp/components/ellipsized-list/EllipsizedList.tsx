@@ -1,5 +1,5 @@
 import _ from "lodash";
-import i18n from "../../../locales";
+import i18n from "../../../utils/i18n";
 import { Tooltip } from "@material-ui/core";
 import { SharingSetting } from "../../../domain/entities/SharedObject";
 

@@ -1,6 +1,6 @@
 import React from "react";
 import logo from "./logo-eyeseetea.png";
-import i18n from "../../../locales";
+import i18n from "../../../utils/i18n";
 
 interface ShareProps {
     visible: boolean;

@@ -1,4 +1,4 @@
-import i18n from "@eyeseetea/d2-ui-components/locales";
+import i18n from "../../utils/i18n";
 import _ from "lodash";
 import { Future, FutureData } from "../../domain/entities/Future";
 import { ImportResult, ImportStats } from "../../domain/entities/ImportResult";

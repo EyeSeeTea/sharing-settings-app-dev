@@ -15,7 +15,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { displayName, MetadataItem, MetadataModel } from "../../../../domain/entities/MetadataItem";
 import { Ref } from "../../../../domain/entities/Ref";
 import { ListOptions } from "../../../../domain/repositories/MetadataRepository";
-import i18n from "../../../../locales";
+import i18n from "../../../../utils/i18n";
 import Dropdown, { DropdownOption } from "../../../components/dropdown/Dropdown";
 import { useAppContext } from "../../../contexts/app-context";
 import { MetadataSharingWizardStepProps } from "../SharingWizardSteps";

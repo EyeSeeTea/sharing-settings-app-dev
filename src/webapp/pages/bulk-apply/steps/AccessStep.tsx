@@ -1,4 +1,4 @@
-import i18n from "@dhis2/d2-i18n";
+import i18n from "../../../../utils/i18n";
 import { ConfirmationDialog, ShareUpdate, Sharing, SharingRule } from "@eyeseetea/d2-ui-components";
 import { FormControlLabel, Switch } from "@material-ui/core";
 import React, { useCallback, useState } from "react";

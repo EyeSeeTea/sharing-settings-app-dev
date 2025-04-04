@@ -1,7 +1,7 @@
 import { ConfirmationDialog, useSnackbar } from "@eyeseetea/d2-ui-components";
 import Button from "@material-ui/core/Button";
 import React, { useEffect } from "react";
-import i18n from "../../../../locales";
+import i18n from "../../../../utils/i18n";
 import { ImportSummary } from "../../../components/import-summary/ImportSummary";
 import { MetadataSharingWizardStepProps } from "../SharingWizardSteps";
 import { useSummaryStep } from "./useSummaryStep";

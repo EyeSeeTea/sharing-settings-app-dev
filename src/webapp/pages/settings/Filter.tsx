@@ -1,7 +1,7 @@
 import { displayName, MetadataModel } from "../../../domain/entities/MetadataItem";
 import Dropdown, { DropdownOption } from "../../components/dropdown/Dropdown";
 import _ from "lodash";
-import i18n from "../../../locales";
+import i18n from "../../../utils/i18n";
 
 export const Filter = (props: { model: MetadataModel; onChangeModel: (model: MetadataModel) => void }) => {
     const { model, onChangeModel } = props;
