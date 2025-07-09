@@ -90,8 +90,17 @@ export class MetadataD2ApiRepository implements MetadataRepository {
         return this.api.models[model as ModelIndex].schema.dataShareable ?? false;
     }
 
-    private fetchMetadata(ids: string[]): FutureData<MetadataPayload> {
+    private _fetchMetadata(ids: string[]): FutureData<MetadataPayload> {
         return apiToFuture(this.api.get("/metadata", { filter: `id:in:[${ids.join(",")}]` }));
+    }
+
+    private fetchMetadata(ids: string[], chunkSize = 500): FutureData<MetadataPayload> {
+        const $metadataRequests = _(ids)
+            .chunk(chunkSize)
+            .map(chunkIds => this._fetchMetadata(chunkIds))
+            .value();
+
+        return Future.parallel($metadataRequests).map(responses => mergePayloads(responses));
     }
 
     private fetchMetadataWithDependencies(model: MetadataModel, id: string): FutureData<MetadataPayload> {
