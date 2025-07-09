@@ -79,7 +79,7 @@ export class MetadataD2ApiRepository implements MetadataRepository {
     }
 
     public getModelName(model: string): string {
-        return this.api.models[resolveModelAlias(model)].schema.displayName ?? i18n.t("Unknown model");
+        return this.api.models[model as ModelIndex]?.schema?.displayName ?? i18n.t("Unknown model");
     }
 
     public isShareable(model: string): boolean {
