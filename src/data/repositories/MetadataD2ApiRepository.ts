@@ -79,19 +79,28 @@ export class MetadataD2ApiRepository implements MetadataRepository {
     }
 
     public getModelName(model: string): string {
-        return this.api.models[model as ModelIndex].schema.displayName ?? i18n.t("Unknown model");
+        return this.api.models[model as ModelIndex]?.schema.displayName ?? i18n.t("Unknown model");
     }
 
     public isShareable(model: string): boolean {
-        return this.api.models[model as ModelIndex].schema.shareable ?? false;
+        return this.api.models[resolveModelAlias(model)]?.schema.shareable ?? false;
     }
 
     public isDataShareable(model: string): boolean {
-        return this.api.models[model as ModelIndex].schema.dataShareable ?? false;
+        return this.api.models[resolveModelAlias(model)]?.schema.dataShareable ?? false;
     }
 
-    private fetchMetadata(ids: string[]): FutureData<MetadataPayload> {
+    private _fetchMetadata(ids: string[]): FutureData<MetadataPayload> {
         return apiToFuture(this.api.get("/metadata", { filter: `id:in:[${ids.join(",")}]` }));
+    }
+
+    private fetchMetadata(ids: string[], chunkSize = 250): FutureData<MetadataPayload> {
+        const $metadataRequests = _(ids)
+            .chunk(chunkSize)
+            .map(chunkIds => this._fetchMetadata(chunkIds))
+            .value();
+
+        return Future.parallel($metadataRequests).map(responses => mergePayloads(responses));
     }
 
     private fetchMetadataWithDependencies(model: MetadataModel, id: string): FutureData<MetadataPayload> {
@@ -252,3 +261,8 @@ function getClassName(className: string): string | undefined {
 }
 
 type ModelIndex = keyof D2ApiDefinition["schemas"];
+
+// We don't have eventVisualization in d2-api, use similar eventReports
+function resolveModelAlias(model: string): ModelIndex {
+    return (model === "eventVisualizations" ? "eventReports" : model) as ModelIndex;
+}
