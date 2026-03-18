@@ -80,6 +80,8 @@ export default defineConfig(({ mode }) => {
         define: {
             "process.env": {},
             global: "globalThis",
+            __dirname: JSON.stringify("/"),
+            __filename: JSON.stringify("/index.js"),
         },
     };
 });

@@ -53,21 +53,27 @@ async function main() {
         configI18n(userSettings);
 
         ReactDOM.render(
-            <Provider config={{ baseUrl, apiVersion: 30 }}>
+            <Provider
+                config={{ baseUrl, apiVersion: 30 }}
+                plugin={false}
+                parentAlertsAdd={() => {}}
+                showAlertsInPlugin={false}
+            >
                 <App api={api} d2={d2} instance={instance} />
             </Provider>,
             document.getElementById("root")
         );
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error(err);
-        const feedback = err.toString().match("Unable to get schemas") ? (
+        const message = err instanceof Error ? err.message : String(err);
+        const feedback = message.match("Unable to get schemas") ? (
             <h3 style={{ margin: 20 }}>
                 <a rel="noopener noreferrer" target="_blank" href={baseUrl}>
                     Login
                 </a>
             </h3>
         ) : (
-            <h3>{err.toString()}</h3>
+            <h3>{message}</h3>
         );
         ReactDOM.render(<div>{feedback}</div>, document.getElementById("root"));
     }
