@@ -1,6 +1,6 @@
 import { Future, FutureData } from "../../../domain/entities/Future";
 import { Instance } from "../../entities/Instance";
-import { D2Api, DataStore } from "../../../types/d2-api";
+import type { D2Api, DataStore } from "../../../types/d2-api";
 import { getD2APiFromInstance } from "../../../utils/d2-api";
 import { apiToFuture } from "../../../utils/futures";
 import { StorageClient } from "./StorageClient";
