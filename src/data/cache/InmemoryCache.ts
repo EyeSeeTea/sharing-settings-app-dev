@@ -16,7 +16,7 @@ export class InmemoryCache {
             return Future.success(this.cache[cacheKey] as T);
         }
 
-        return future.map((response) => {
+        return future.map(response => {
             this.cache[cacheKey] = response;
             return response;
         });
@@ -26,4 +26,3 @@ export class InmemoryCache {
         this.cache = {};
     }
 }
-

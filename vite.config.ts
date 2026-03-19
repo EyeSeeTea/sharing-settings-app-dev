@@ -49,12 +49,12 @@ export default defineConfig(({ mode }) => {
             proxy,
             ...(proxy &&
                 env.VITE_DHIS2_BASE_URL && {
-                    configure: (server) => {
+                    configure: server => {
                         server.middlewares.use((req, res, next) => {
                             const url = req.url || "";
                             const targetUrl = (env.VITE_DHIS2_BASE_URL || "").replace(/\/$/, "");
                             const shouldRedirect = REDIRECT_PATHS.some(
-                                (p) => url.startsWith("/dhis2" + p) || url.startsWith("/dhis2/" + p.slice(1))
+                                p => url.startsWith("/dhis2" + p) || url.startsWith("/dhis2/" + p.slice(1))
                             );
                             if (shouldRedirect && targetUrl) {
                                 const path = url.replace(/^\/dhis2\/?/, "/");
@@ -85,4 +85,3 @@ export default defineConfig(({ mode }) => {
         },
     };
 });
-

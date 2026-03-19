@@ -35,7 +35,7 @@ export class InstanceDefaultRepository implements InstanceRepository {
                         },
                     },
                 })
-            ).map((user) => ({
+            ).map(user => ({
                 id: user.id,
                 name: user.displayName,
                 userGroups: user.userGroups,
