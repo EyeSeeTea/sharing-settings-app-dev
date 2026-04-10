@@ -10,7 +10,7 @@ import {
     Visualization,
 } from "../../domain/entities/MetadataItem";
 import { ListMetadataResponse, ListOptions, MetadataRepository } from "../../domain/repositories/MetadataRepository";
-import { D2Api, D2ApiDefinition, MetadataResponse, Stats } from "../../types/d2-api";
+import type { D2Api, D2ApiDefinition, MetadataResponse, Stats } from "../../types/d2-api";
 import { getD2APiFromInstance } from "../../utils/d2-api";
 import { apiToFuture } from "../../utils/futures";
 import { Instance } from "../entities/Instance";

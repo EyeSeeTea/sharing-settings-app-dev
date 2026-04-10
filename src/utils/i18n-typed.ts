@@ -1,3 +1,4 @@
+// @ts-ignore - generated JS module; types provided by @dhis2/d2-i18n
 import i18n from "../locales";
 
 export function getModuleForNamespace(namespace: string) {

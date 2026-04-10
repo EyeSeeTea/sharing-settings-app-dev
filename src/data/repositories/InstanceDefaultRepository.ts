@@ -2,7 +2,7 @@ import { D2Api } from "@eyeseetea/d2-api/2.34";
 import { FutureData } from "../../domain/entities/Future";
 import { User } from "../../domain/entities/User";
 import { InstanceRepository } from "../../domain/repositories/InstanceRepository";
-import { cache } from "../../utils/cache";
+import { InmemoryCache } from "../cache/InmemoryCache";
 import { getD2APiFromInstance } from "../../utils/d2-api";
 import { apiToFuture } from "../../utils/futures";
 import { Instance } from "../entities/Instance";
@@ -10,6 +10,7 @@ import { UserSearch } from "../entities/SearchUser";
 
 export class InstanceDefaultRepository implements InstanceRepository {
     private api: D2Api;
+    private cache = new InmemoryCache();
 
     constructor(instance: Instance) {
         this.api = getD2APiFromInstance(instance);
@@ -19,26 +20,28 @@ export class InstanceDefaultRepository implements InstanceRepository {
         return this.api.baseUrl;
     }
 
-    @cache()
     public getCurrentUser(): FutureData<User> {
-        return apiToFuture(
-            this.api.currentUser.get({
-                fields: {
-                    id: true,
-                    displayName: true,
-                    userGroups: { id: true, name: true },
-                    userCredentials: {
-                        username: true,
-                        userRoles: { id: true, name: true, authorities: true },
+        return this.cache.getOrFuture(
+            "currentUser",
+            apiToFuture(
+                this.api.currentUser.get({
+                    fields: {
+                        id: true,
+                        displayName: true,
+                        userGroups: { id: true, name: true },
+                        userCredentials: {
+                            username: true,
+                            userRoles: { id: true, name: true, authorities: true },
+                        },
                     },
-                },
-            })
-        ).map(user => ({
-            id: user.id,
-            name: user.displayName,
-            userGroups: user.userGroups,
-            ...user.userCredentials,
-        }));
+                })
+            ).map(user => ({
+                id: user.id,
+                name: user.displayName,
+                userGroups: user.userGroups,
+                ...user.userCredentials,
+            }))
+        );
     }
 
     public searchUsers(query: string): FutureData<UserSearch> {
@@ -50,8 +53,10 @@ export class InstanceDefaultRepository implements InstanceRepository {
         return apiToFuture(this.api.metadata.get({ users: options, userGroups: options }));
     }
 
-    @cache()
     public getInstanceVersion(): FutureData<string> {
-        return apiToFuture(this.api.system.info).map(({ version }) => version);
+        return this.cache.getOrFuture(
+            "instanceVersion",
+            apiToFuture(this.api.system.info).map(({ version }) => version)
+        );
     }
 }
