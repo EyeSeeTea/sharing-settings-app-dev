@@ -6,6 +6,9 @@ import nodePolyfills from "vite-plugin-node-stdlib-browser";
 
 const REDIRECT_PATHS = ["/dhis-web-pivot", "/dhis-web-data-visualizer"];
 
+/** Vite's default "modules" target, raised to safari14.1: esbuild 0.28+ fails on Safari 14.0's destructuring bug. */
+const ESBUILD_TARGET = ["es2020", "edge88", "firefox78", "chrome87", "safari14.1"];
+
 function getProxy(env: Record<string, string>) {
     const targetUrl = env.VITE_DHIS2_BASE_URL;
     const auth = env.VITE_DHIS2_AUTH;
@@ -67,10 +70,17 @@ export default defineConfig(({ mode }) => {
                     },
                 }),
         },
+        optimizeDeps: {
+            esbuildOptions: {
+                target: ESBUILD_TARGET,
+            },
+        },
         build: {
             outDir: "build",
+            target: ESBUILD_TARGET,
         },
         test: {
+            reporters: [["default", { summary: false }]],
             environment: "jsdom",
             globals: true,
             include: ["src/**/*.{test,spec}.{ts,tsx}"],
