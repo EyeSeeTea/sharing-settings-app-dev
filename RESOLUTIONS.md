@@ -48,6 +48,23 @@ reads. Thus the two scans can show different versions of the same package. For a
 The two scans also find different packages. The Syft scan reads the installed files. Thus it reports
 the Go standard library in the esbuild binary, and the Berry scan does not. Read the `esbuild` entry.
 
+### The two severities disagree
+
+Dependency-Track ranks a finding by its CVSS score. The GitHub Advisory Database sets its own
+severity. The two values disagree, and they disagree in both directions. Two examples of 2026-08-21:
+
+-   GHSA-2v37-7h3g-55p8 (`nanoid`) is **high** in the GitHub Advisory Database. Its CVSS score is 5.9,
+    which is medium.
+-   GHSA-848j-6mx2-7j84 (`elliptic`) is **low** in the GitHub Advisory Database. Its CVSS score is 5.6,
+    which is medium.
+
+Read both values. A CI gate on critical and high can pass while the GitHub Advisory Database shows a
+high finding. Do this command:
+
+```bash
+gh api advisories/<GHSA> --jq '[.severity, .cvss.score, .withdrawn_at]'
+```
+
 ### Use a minimum version, not an exact version
 
 Before you write an entry, decide what the version must do.
@@ -68,6 +85,12 @@ showed this problem on 2026-08-06:
     them.
 -   The `qs` entry was `6.14.2`. A later advisory includes the versions 6.11.1 to 6.15.1. Thus the
     entry kept a vulnerable version in the tree. It also prevented version 6.15.2.
+
+**A direct dependency can have the same problem.** On 2026-08-21 the development dependency
+`@babel/core` was the exact version `7.15.5`. GHSA-4x5r-pxfx-6jf8 patches at 7.29.6. The exact version
+prevented that release. It also held `@babel/helpers` at 7.15.4, which GHSA-968p-4wvh-cqc8 includes.
+The dependency is now `^7.29.6`, and both packages resolve to 7.29.7. Examine the `dependencies` and
+`devDependencies` blocks with the same method as the `resolutions` block.
 
 **An entry can also keep a package below the range that its parent declares.** This looks like
 protection, but the result is the opposite. On 2026-08-06 we removed the `semver` and `debug`
@@ -402,15 +425,17 @@ records a minimum version that the tree already meets.
 -   **Fixes:** GHSA-c2c7-rcm5-vvqj (high). The patched versions are 2.3.2 and 4.0.4.
 -   **⚠️ The two 2.x entries have no effect in this repository.** Read the per-parent warning in
     [Conventions](#conventions). `fast-glob` and `micromatch` are transitive parents. Thus Yarn 1
-    ignores both entries and keeps a nested `picomatch@2.2.2`. We verified this on 2026-08-06 with
-    `yarn why picomatch`. We also read `node_modules/*/node_modules/picomatch/package.json`. The four
-    4.x entries do have an effect, because Yarn puts the Vite tools at the top level.
--   **Result:** the Berry scan is the scan that reports picomatch. On 2026-08-06 we did a Berry
-    install of this `package.json` in a separate folder. Berry gave two versions only: 2.3.2 and
-    4.0.5. Both versions have the patch. Thus these entries correct the scan that reports the finding.
--   **⚠️ The Syft scan does not report picomatch.** The Yarn 1 tree keeps the nested
-    `picomatch@2.2.2`, but the last Syft scan reported no picomatch finding. Examine this again if a
-    picomatch finding appears in a Syft report.
+    ignores both entries. We verified this on 2026-08-06 with `yarn why picomatch`. We also read
+    `node_modules/*/node_modules/picomatch/package.json`. The four 4.x entries do have an effect,
+    because Yarn puts the Vite tools at the top level.
+-   **⚠️ The lockfile, and not the two 2.x entries, kept `picomatch@2.2.2` in the Yarn 1 tree.** The
+    entries were correct and unnecessary. `micromatch` asks for `^2.0.5` and `fast-glob` asks for
+    `^2.2.1`. Both ranges permit the patched 2.3.2, but the lockfile held an older resolution. On
+    2026-08-21 we removed those lockfile blocks and did `yarn install` again. Yarn 1 now gives 2.3.2.
+    Keep the two entries as a minimum version.
+-   **Result:** on 2026-08-06 we did a Berry install of this `package.json` in a separate folder.
+    Berry gave two versions only: 2.3.2 and 4.0.5. After the re-resolution of 2026-08-21, the Yarn 1
+    tree gives 2.3.2 and 4.0.5 also. Each version has the patch, and the two scans now agree.
 -   **Drop when:** Somebody upgrades `@typescript-eslint` above major version 4. That upgrade removes
     the full 2.x line, together with `globby`, `fast-glob` and `micromatch`. It also removes the
     difference between the two scans. Remove the 4.x entries when the Vite tools ask for
@@ -420,14 +445,43 @@ records a minimum version that the tree already meets.
 
 ## Accepted findings with no correction available
 
-There are none. Each critical finding and each high finding in the last scan has a correction in this
-file.
+We found these three findings on 2026-08-21. We compared each resolved version in the lockfile with
+the GitHub Advisory Database. No entry can correct them. Each package is a development tool. No
+package below is in the application bundle.
 
 ⚠️ Keep this section. When you accept a finding, record it here. Give this data for each finding: the
 full chain, the reason for no correction, the place where the code runs, the reachability of the
 vulnerable code, the difference between the two scans, and the condition to examine it again. Policy
 says that you must correct a critical or high finding, or you must record it as an exception with
 management approval.
+
+#### `extract-zip@2.0.1` — GHSA-jmr9-qjv8-65gv (high, CVSS 8.1)
+
+-   **Chain:** `cypress@8.3.1` → `extract-zip`. `cypress` asks for the exact version `2.0.1`.
+-   **Why no correction:** the advisory includes all versions to 2.0.1. It records no patched version.
+    Version 2.0.1 is the newest release on npm, and the last release was in 2021. An entry cannot give
+    a version that does not exist.
+-   **Where the code runs:** the `cypress` binary installer only. It is not in the application bundle.
+-   **Reachability:** the vulnerability needs an archive that contains a symbolic link. Cypress reads
+    its own archive from the Cypress download server.
+-   **Note:** this advisory changed on 2026-08-12, after the analysis of 2026-08-06.
+-   **Examine again when:** `cypress` no longer uses `extract-zip`, or a 2.0.2 release occurs.
+
+#### `@cypress/request@2.88.6` — GHSA-p8p7-x288-28g6 (medium, CVSS 6.1)
+
+-   **Chain:** `cypress@8.3.1` → `@cypress/request`. `cypress` asks for `^2.88.6`.
+-   **Why no correction:** the patch is in 3.0.0. The range `^2.88.6` stops below that release. An
+    entry can force 3.0.0, but that release changes the interface of the request client. The `uuid`
+    entry and the `tough-cookie` entry both apply to this package, and both are not verified against
+    the end-to-end tests.
+-   **Where the code runs:** the Cypress test tool only.
+-   **Examine again when:** `cypress` asks for `@cypress/request@^3.0.0` or a later version.
+
+#### `elliptic@6.6.1` — GHSA-848j-6mx2-7j84 (low in the GitHub Advisory Database, CVSS 5.6)
+
+-   **Chain:** the browser polyfill chain below `vite-plugin-node-stdlib-browser`.
+-   **Why no correction:** the advisory includes each published version. Version 6.6.1 is `latest`.
+-   **Examine again when:** an elliptic release above 6.6.1 occurs.
 
 ---
 
@@ -517,6 +571,55 @@ gh api advisories/<GHSA> --jq '.withdrawn_at // "not withdrawn"'
 | `GHSA-gv7w-rqvm-qjhr` | `esbuild` | 2026-06-17 | This advisory is not the reason for the `esbuild` entry. Read that entry.                                                                                                                                               |
 | `GHSA-qmq6-f8pr-cx5x` | `uuid`    | 2026-05-05 | A duplicate advisory with low severity. It caused a `uuid: 14.0.1` entry on 2026-07-30. That entry forced a major ES module on a CommonJS parent. On 2026-08-06 we replaced it with `^11.1.1` for the current advisory. |
 | `GHSA-p5wg-g6qr-c7cg` | `eslint`  | 2026-02-03 | To correct it, you must upgrade eslint by one major version. That upgrade corrects nothing.                                                                                                                             |
+| `GHSA-7gc6-qh9x-w6h8` | `cross-fetch` | 2025-10-08 | Found on 2026-08-21 against `cross-fetch@3.1.4`. The declared range permits the patched 3.1.5, but the advisory is withdrawn. Do not add an entry.                                                              |
+
+---
+
+## A finding can be in the lockfile only
+
+**Not each finding needs an entry.** An advisory can move after you write this file. The GitHub
+Advisory Database changes the patched version of an advisory, or it adds a new advisory to a version
+that was satisfactory. In many of these cases the range that the parent declares already permits the
+patch. Then the lockfile, and not `package.json`, is the reason for the finding.
+
+On 2026-08-21 we compared each resolved version in `yarn.lock` with the GitHub Advisory Database. 20
+package findings occurred. 14 of them needed no entry:
+
+| Package                  | Before        | After   | Advisory                                   |
+| ------------------------ | ------------- | ------- | ------------------------------------------ |
+| `nanoid`                 | 3.3.17        | 3.3.18  | GHSA-2v37-7h3g-55p8 (high)                 |
+| `picomatch`              | 2.2.2         | 2.3.2   | GHSA-c2c7-rcm5-vvqj (high), GHSA-3v7f-55p6-f55p |
+| `micromatch`             | 4.0.2         | 4.0.8   | GHSA-952p-6rrq-rcjv                        |
+| `ajv`                    | 6.12.2, 6.12.4| 6.15.0  | GHSA-2g4f-4pwh-qvx6, GHSA-v88g-cgmw-v5xw   |
+| `ajv`                    | 8.6.0         | 8.20.0  | GHSA-2g4f-4pwh-qvx6                        |
+| `joi`                    | 17.4.2        | 17.13.6 | GHSA-q7cg-457f-vx79                        |
+| `yaml`                   | 1.10.0        | 1.10.3  | GHSA-48c2-rrv3-qjmp                        |
+| `hosted-git-info`        | 2.8.8         | 2.8.9   | GHSA-43f8-2h32-f4cj                        |
+| `@sideway/formula`       | 3.0.0         | 3.0.1   | GHSA-c2jc-4fpr-4vhg                        |
+| `@babel/helpers`         | 7.15.4        | 7.29.7  | GHSA-968p-4wvh-cqc8                        |
+| `@babel/runtime-corejs3` | 7.10.4        | 7.29.7  | GHSA-968p-4wvh-cqc8                        |
+| `@babel/core`            | 7.15.5, 7.29.0| 7.29.7  | GHSA-4x5r-pxfx-6jf8                        |
+
+The `@babel/core` row also needed a change to `devDependencies`. Read
+[Use a minimum version](#use-a-minimum-version-not-an-exact-version). The other rows changed the
+lockfile only.
+
+To find these findings, read the resolved versions from `yarn.lock`, then do this command for each
+one:
+
+```bash
+gh api "advisories?ecosystem=npm&affects=<package>@<version>"
+```
+
+To correct one, remove its block from `yarn.lock` and do `yarn install`. Then read the new version
+from `yarn.lock`. Do not use the exit code of the command as the result:
+
+```bash
+grep -A1 '^nanoid@' yarn.lock   # expect version "3.3.18"
+```
+
+⚠️ `yarn upgrade <package>` does not do this. Yarn 1 accepts that command for a direct dependency
+only. The command `yarn up -R <package>` is a Yarn Berry command. This project uses Yarn 1.
 
 ---
 
@@ -533,6 +636,22 @@ Each condition below shows that an entry is no longer correct:
     minimum version.
 -   A per-parent entry names a parent that `yarn why <parent>` no longer shows. That entry now matches
     nothing. Remove it.
+-   The advisory moved. An advisory can change its patched version after you write the entry. Compare
+    the entry with the current data from `gh api advisories/<GHSA>`, and not with this file.
+
+## Verification done on 2026-08-21
+
+These commands all pass after the re-resolution above: `yarn install --frozen-lockfile`,
+`tsc --noEmit`, `yarn lint`, `yarn test` (864 tests), `yarn localize` (no change to the locale files)
+and `yarn build-folder`.
+
+We then compared each of the 1250 resolved versions in `yarn.lock` with the GitHub Advisory Database.
+Six findings stay: the three withdrawn advisories in the table above, and the three findings in
+[Accepted findings](#accepted-findings-with-no-correction-available). Each entry in the `resolutions`
+block gives a version that no current advisory includes.
+
+**Not verified:** the Cypress end-to-end tests, the start-up of the application, and a manual test of
+the user functions.
 
 ## Verification done on 2026-08-06
 

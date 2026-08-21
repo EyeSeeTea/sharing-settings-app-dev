@@ -90,7 +90,7 @@
         "styled-jsx": "5.0.0"
     },
     "devDependencies": {
-        "@babel/core": "7.15.5",
+        "@babel/core": "^7.29.6",
         "@babel/preset-typescript": "7.15.0",
         "@testing-library/cypress": "8.0.1",
         "@testing-library/jest-dom": "^6.9.1",
