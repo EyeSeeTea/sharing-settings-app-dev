@@ -182,13 +182,13 @@ version on 2026-08-06.
 
 #### `form-data: ^4.0.6` → 4.0.6
 
--   **Why:** One bare entry keeps `axios`, `jsdom`, `@eyeseetea/d2-api` and `@cypress/request` on one
-    patched line. `@cypress/request` asks for `~2.3.2`. The 2.x line had no patched release when we
-    wrote this entry. Thus the change of major version is intentional.
+-   **Why:** Three parents ask for `form-data`: `axios` asks for `^4.0.6`, and `jsdom` and
+    `@eyeseetea/d2-api` both ask for `^4.0.0`. The two `^4.0.0` ranges permit a version below the
+    patch. One bare entry keeps all three on the patched line.
 -   **Fixes:** GHSA-fjxv-7rqg-78g4 (critical, `>= 4.0.0, < 4.0.4`) and GHSA-hmw2-7cc7-3qxx
     (`>= 4.0.0, < 4.0.6`).
--   **⚠️ `@cypress/request` prevents the removal of this entry.** Do not remove this entry while
-    `cypress` is a development dependency.
+-   **Note:** the `@cypress/request` parent left the tree on 2026-08-25 with `cypress`. Before that
+    date, this entry also moved that parent from the 2.x line.
 -   **Drop when:** All parents ask for `form-data@^4.0.6` or a later version.
 
 #### `linkify-it: ^5.0.2` → 5.0.2
@@ -245,32 +245,6 @@ version on 2026-08-06.
     easy.
 -   **Drop when:** `optionator` asks for `word-wrap@^1.2.4` or a later version.
 
-#### `async: ^3.2.6` → 3.2.6
-
--   **Why:** `getos` is below `cypress`. It asks for `async@^3.2.0`. This package is a test tool only.
-    It has no run-time path.
--   **Fixes:** GHSA-fwr7-v2mv-hh25 (`>= 3.0.0, < 3.2.2`). The vulnerability is a regular expression
-    denial of service in `autoInject`.
--   **Drop when:** `cypress` no longer uses the `getos` chain.
-
-#### `tmp: ^0.2.7` → 0.2.7
-
--   **Why:** `cypress` asks for `tmp@~0.2.1`. This package is a test tool only.
--   **Fixes:** GHSA-7c78-jf6q-g5cm (`>= 0.2.6, < 0.2.7`) and GHSA-ph9p-34f9-6g65 (`< 0.2.6`). The
-    vulnerability writes to an unwanted file through a symbolic link.
--   **Drop when:** `cypress` asks for `tmp@^0.2.7` or a later version.
-
-#### `tough-cookie: ^4.1.4` → 4.1.4
-
--   **Why:** `@cypress/request` asks for `tough-cookie@~2.5.0`. The 2.x line has no patched release.
-    Thus the 4.x line is the only correction. `jsdom` already uses the 4.x line.
--   **Fixes:** CVE-2023-26136 (critical). The vulnerability is prototype pollution.
--   **⚠️ In tough-cookie 4, the function `getCookieString` is asynchronous only.** This can cause a
-    failure in the Cypress cookie functions at run time. CI does not do the Cypress end-to-end tests.
-    Thus the risk applies to a local `yarn cy:e2e:run` only. **We did not verify this.** Do the
-    end-to-end tests before you use this entry.
--   **Drop when:** `cypress` uses a request client that uses tough-cookie 4 or a later version.
-
 #### `ws: ^8.21.1` → 8.21.2
 
 -   **Why:** `jsdom` asks for `ws@^8.18.0`. The lockfile held that request below the patch.
@@ -285,13 +259,6 @@ version on 2026-08-06.
     `diff` advisory includes versions below 3.5.0 only. It does not include the 4.x line.
 -   **Fixes:** GHSA-73rr-hh4g-fpgx (**low**, `>= 4.0.0, < 4.0.4`). The patch is in 4.0.4.
 -   **Drop when:** `ts-node` asks for `diff@^4.0.4` or a later version.
-
-#### `json-schema: ^0.4.0` → 0.4.0
-
--   **Why:** `jsprim` is in the `@cypress/request` chain. It asks for the exact version `0.2.3`. This
-    package is a test tool only.
--   **Fixes:** GHSA-896r-f27r-55mw (critical, `< 0.4.0`). The vulnerability is prototype pollution.
--   **Drop when:** The `@cypress/request` chain is no longer in the tree.
 
 #### `js-yaml: ^3.15.0` → 3.15.1
 
@@ -337,30 +304,6 @@ version on 2026-08-06.
     to the default Vite "modules" target, but with `safari14.1` in place of `safari14`. Do not remove
     that constant while this entry is in the file.
 -   **Drop when:** Both `vite` major versions in the tree ask for esbuild 0.28.1 or a later version.
-
-#### `uuid: ^11.1.1` → 11.1.1
-
--   **Why:** `@cypress/request` asks for `uuid@^8.3.2`. That range gives the vulnerable version
-    `8.3.2`.
--   **Fixes:** GHSA-w5hq-g745-h8pq (**medium**, `< 11.1.1`). The functions `v3()`, `v5()` and `v6()`
-    accept an output buffer from the caller. They do not refuse a write that is outside the buffer.
--   **⚠️ uuid 11 is an ES module.** Its `package.json` has `"type": "module"` and no CommonJS build.
-    `@cypress/request` is CommonJS. Three facts make this entry safe. All three must stay true:
-    1. `@cypress/request` uses `const { v4: uuid } = require("uuid")`. It does **not** use the
-       `uuid/v4` path, which uuid 7 removed. We verified this in `lib/multipart.js` and `lib/auth.js`.
-    2. This copy belongs to the `cypress` command-line package, which runs on the system Node.
-       `.nvmrc` sets Node 22. Node 22 can do `require()` on an ES module. The Cypress binary contains
-       a different copy of `@cypress/request`. This entry does not change that copy.
-    3. Node below version 22.12 cannot do `require()` on an ES module. **Do not set `.nvmrc` below
-       Node 22 while this entry is in the file.**
--   **Verified:** `require("uuid").v4()` gives a version 4 value. `@cypress/request/lib/multipart.js`
-    and `lib/auth.js` both load. `npx cypress version` shows the binary version.
--   **Not verified:** the Cypress end-to-end tests. Do `yarn cy:e2e:run` before you use this entry.
--   **Reachability:** the vulnerability needs an output buffer from the caller. The request client
-    calls `uuid()` with no arguments. Thus the vulnerable code was not reachable. We made this change
-    because it is easy, not because it was necessary.
--   **Drop when:** `cypress` asks for `uuid@^11.1.1` or a later version, or it no longer uses
-    `@cypress/request`.
 
 #### `glob-parent: ^5.1.2` → 5.1.2
 
@@ -445,37 +388,16 @@ records a minimum version that the tree already meets.
 
 ## Accepted findings with no correction available
 
-We found these three findings on 2026-08-21. We compared each resolved version in the lockfile with
-the GitHub Advisory Database. No entry can correct them. Each package is a development tool. No
-package below is in the application bundle.
+We found three findings on 2026-08-21. We compared each resolved version in the lockfile with the
+GitHub Advisory Database. No entry can correct them. Each package is a development tool. No package
+below is in the application bundle. Two of the three findings were below `cypress`. They left the
+tree on 2026-08-25 with that dependency. One finding stays.
 
 ⚠️ Keep this section. When you accept a finding, record it here. Give this data for each finding: the
 full chain, the reason for no correction, the place where the code runs, the reachability of the
 vulnerable code, the difference between the two scans, and the condition to examine it again. Policy
 says that you must correct a critical or high finding, or you must record it as an exception with
 management approval.
-
-#### `extract-zip@2.0.1` — GHSA-jmr9-qjv8-65gv (high, CVSS 8.1)
-
--   **Chain:** `cypress@8.3.1` → `extract-zip`. `cypress` asks for the exact version `2.0.1`.
--   **Why no correction:** the advisory includes all versions to 2.0.1. It records no patched version.
-    Version 2.0.1 is the newest release on npm, and the last release was in 2021. An entry cannot give
-    a version that does not exist.
--   **Where the code runs:** the `cypress` binary installer only. It is not in the application bundle.
--   **Reachability:** the vulnerability needs an archive that contains a symbolic link. Cypress reads
-    its own archive from the Cypress download server.
--   **Note:** this advisory changed on 2026-08-12, after the analysis of 2026-08-06.
--   **Examine again when:** `cypress` no longer uses `extract-zip`, or a 2.0.2 release occurs.
-
-#### `@cypress/request@2.88.6` — GHSA-p8p7-x288-28g6 (medium, CVSS 6.1)
-
--   **Chain:** `cypress@8.3.1` → `@cypress/request`. `cypress` asks for `^2.88.6`.
--   **Why no correction:** the patch is in 3.0.0. The range `^2.88.6` stops below that release. An
-    entry can force 3.0.0, but that release changes the interface of the request client. The `uuid`
-    entry and the `tough-cookie` entry both apply to this package, and both are not verified against
-    the end-to-end tests.
--   **Where the code runs:** the Cypress test tool only.
--   **Examine again when:** `cypress` asks for `@cypress/request@^3.0.0` or a later version.
 
 #### `elliptic@6.6.1` — GHSA-848j-6mx2-7j84 (low in the GitHub Advisory Database, CVSS 5.6)
 
@@ -494,9 +416,9 @@ version. Thus you can possibly remove the entry.
 a time. Remove the entry, do `yarn install`, then compare the resolved versions. Do not test more than
 one entry at the same time.
 
-`async`, `braces`, `brace-expansion`, `cross-spawn`, `diff`, `flatted`, `handlebars`, `js-yaml`,
-`json5`, `minimatch`, `minimist`, `moment`, `path-parse`, `postcss`, `tmp`, `ua-parser-js`,
-`uglify-js`, `word-wrap`, `ws`, `@babel/runtime`, `@babel/traverse`.
+`braces`, `brace-expansion`, `cross-spawn`, `diff`, `flatted`, `handlebars`, `js-yaml`, `json5`,
+`minimatch`, `minimist`, `moment`, `path-parse`, `postcss`, `ua-parser-js`, `uglify-js`, `word-wrap`,
+`ws`, `@babel/runtime`, `@babel/traverse`.
 
 We removed three entries on 2026-08-06 after this test:
 
@@ -569,7 +491,7 @@ gh api advisories/<GHSA> --jq '.withdrawn_at // "not withdrawn"'
 | Advisory              | Package   | Withdrawn  | Note                                                                                                                                                                                                                    |
 | --------------------- | --------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `GHSA-gv7w-rqvm-qjhr` | `esbuild` | 2026-06-17 | This advisory is not the reason for the `esbuild` entry. Read that entry.                                                                                                                                               |
-| `GHSA-qmq6-f8pr-cx5x` | `uuid`    | 2026-05-05 | A duplicate advisory with low severity. It caused a `uuid: 14.0.1` entry on 2026-07-30. That entry forced a major ES module on a CommonJS parent. On 2026-08-06 we replaced it with `^11.1.1` for the current advisory. |
+| `GHSA-qmq6-f8pr-cx5x` | `uuid`    | 2026-05-05 | A duplicate advisory with low severity. It caused a `uuid: 14.0.1` entry on 2026-07-30. That entry forced a major ES module on a CommonJS parent. On 2026-08-06 we replaced it with `^11.1.1`. The entry left the file on 2026-08-25 with `cypress`. |
 | `GHSA-p5wg-g6qr-c7cg` | `eslint`  | 2026-02-03 | To correct it, you must upgrade eslint by one major version. That upgrade corrects nothing.                                                                                                                             |
 | `GHSA-7gc6-qh9x-w6h8` | `cross-fetch` | 2025-10-08 | Found on 2026-08-21 against `cross-fetch@3.1.4`. The declared range permits the patched 3.1.5, but the advisory is withdrawn. Do not add an entry.                                                              |
 
@@ -639,6 +561,37 @@ Each condition below shows that an entry is no longer correct:
 -   The advisory moved. An advisory can change its patched version after you write the entry. Compare
     the entry with the current data from `gh api advisories/<GHSA>`, and not with this file.
 
+## Verification done on 2026-08-25
+
+We removed `cypress` and its four helper packages: `@testing-library/cypress`, `cypress-xpath`,
+`eslint-plugin-cypress` and `wait-on`. We also removed the `cypress/` folder, `cypress.json`, the
+three `cy:*` scripts, and the cypress parts of `.eslintrc.js`, `.gitignore`, `.env`, `vite.config.ts`
+and `README.md`. The lockfile lost 857 lines.
+
+Five entries left the `resolutions` block with that dependency. Each one had a `cypress` parent only:
+
+| Entry                    | Parent that is now gone            |
+| ------------------------ | ---------------------------------- |
+| `async: ^3.2.6`          | `cypress` → `getos`                |
+| `tmp: ^0.2.7`            | `cypress`                          |
+| `tough-cookie: ^4.1.4`   | `@cypress/request`                 |
+| `json-schema: ^0.4.0`    | `@cypress/request` → `jsprim`      |
+| `uuid: ^11.1.1`          | `@cypress/request`                 |
+
+We removed the five entries together and did `yarn install`. We then compared the 1129 resolved
+versions with the versions before the removal. **No resolved version changed.** `tough-cookie` stays
+at 4.1.4, because `jsdom` asks for `^4.1.4`. The other four packages are no longer in the tree. Yarn 1
+kept a dead block for each of the four in `yarn.lock`. We removed those four blocks by hand, then did
+`yarn install` again. They did not come back.
+
+The `form-data` entry stays. It lost the `@cypress/request` parent, but `jsdom` and
+`@eyeseetea/d2-api` both ask for `^4.0.0`. That range still permits a version below the patch.
+
+These commands all pass: `yarn install --frozen-lockfile`, `tsc --noEmit`, `yarn lint`, `yarn test`
+(864 tests), `yarn localize` (no change to the locale files) and `yarn build-folder`.
+
+**Not verified:** the start-up of the application and a manual test of the user functions.
+
 ## Verification done on 2026-08-21
 
 These commands all pass after the re-resolution above: `yarn install --frozen-lockfile`,
@@ -651,7 +604,7 @@ Six findings stay: the three withdrawn advisories in the table above, and the th
 block gives a version that no current advisory includes.
 
 **Not verified:** the Cypress end-to-end tests, the start-up of the application, and a manual test of
-the user functions.
+the user functions. (`cypress` left the project on 2026-08-25. The end-to-end tests no longer exist.)
 
 ## Verification done on 2026-08-06
 
@@ -665,8 +618,9 @@ We also tested the tools that use the packages in these entries:
 -   A `require()` of `@cypress/request/lib/multipart.js` and `lib/auth.js` for `uuid`.
 
 **Not verified:** the application start-up, a manual test of the user functions, and the Cypress
-end-to-end tests. The `tough-cookie` entry and the `uuid` entry both change the Cypress request
-client. Do `yarn cy:e2e:run` before you use them.
+end-to-end tests. The `tough-cookie` entry and the `uuid` entry both changed the Cypress request
+client. (`cypress` left the project on 2026-08-25, together with both entries. This risk is now
+gone.)
 
 **Related note:** `vite-plugin-node-stdlib-browser` declares a peer dependency of
 `vite@^2.0.0 || ^3.0.0 || ^4.0.0`. This project now uses vite 6. The build passes. Yarn shows a

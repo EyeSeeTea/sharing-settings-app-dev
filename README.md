@@ -40,21 +40,6 @@ Notes:
 $ yarn test
 ```
 
-### Integration tests (Cypress)
-
-Create the required users for testing (`cypress/support/App.ts`) in your instance and run:
-
-```
-$ export CYPRESS_EXTERNAL_API="http://localhost:8080"
-$ export CYPRESS_ROOT_URL=http://localhost:8081
-
-# non-interactive
-$ yarn cy:e2e:run
-
-# interactive UI
-$ yarn cy:e2e:open
-```
-
 ## Build app ZIP
 
 ```
@@ -74,7 +59,6 @@ $ yarn build
 -   `src/types`: `.d.ts` file types for modules without TS definitions.
 -   `src/utils`: Misc utilities.
 -   `src/locales`: Auto-generated, do not update or add to the version control.
--   `cypress/integration/`: Cypress integration tests.
 
 ### i18n
 

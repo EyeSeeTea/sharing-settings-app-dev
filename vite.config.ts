@@ -84,7 +84,7 @@ export default defineConfig(({ mode }) => {
             environment: "jsdom",
             globals: true,
             include: ["src/**/*.{test,spec}.{ts,tsx}"],
-            exclude: ["node_modules", "cypress"],
+            exclude: ["node_modules"],
             setupFiles: ["./src/tests/setup.ts"],
         },
         define: {
