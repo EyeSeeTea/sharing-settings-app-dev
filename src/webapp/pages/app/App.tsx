@@ -1,4 +1,3 @@
-import { HeaderBar } from "@dhis2/ui";
 import { SnackbarProvider } from "@eyeseetea/d2-ui-components";
 import { MuiThemeProvider } from "@material-ui/core/styles";
 import _ from "lodash";
@@ -10,6 +9,7 @@ import { getCompositionRoot } from "../../../CompositionRoot";
 import { Instance } from "../../../data/entities/Instance";
 import type { D2Api } from "../../../types/d2-api";
 import { Feedback } from "@eyeseetea/feedback-component";
+import { HeaderBar } from "../../components/header-bar/HeaderBar";
 import Share from "../../components/share/Share";
 import { AppContext, AppContextState } from "../../contexts/app-context";
 import { Router } from "../Router";
