@@ -131,15 +131,18 @@ version.
 ### Minimum versions examined on 2026-08-06
 
 All the entries in this section are minimum versions. The version after each heading is the resolved
-version on 2026-08-06.
+version on 2026-08-06. An entry that changed on 2026-10-27 shows the resolved version of that date.
 
-#### `axios: ^1.19.0` → 1.19.0
+#### `axios: ^1.20.0` → 1.20.0
 
 -   **Why:** This entry agrees with the direct dependency `dependencies.axios`. It also moves the
-    transitive requests for `0.21.x`, `0.27.x` and `1.6.4` up to the patched version.
+    transitive requests for `0.21.x`, `0.27.x` and `1.6.4` up to the patched version. The `1.6.4`
+    request comes from `@eyeseetea/d2-api@1.21.0`, which asks for that exact version.
 -   **Fixes:** GHSA-gcfj-64vw-6mp9 (`>= 1.15.2, < 1.18.0`), GHSA-hfxv-24rg-xrqf, GHSA-777c-7fjr-54vf,
-    GHSA-p92q-9vqr-4j8v and GHSA-j5f8-grm9-p9fc (all `< 1.16.0`).
--   **Drop when:** No transitive parent asks for an axios version below 1.18.0. Keep this entry and
+    GHSA-p92q-9vqr-4j8v and GHSA-j5f8-grm9-p9fc (all `< 1.16.0`). On 2026-10-27 the entry moved from
+    `^1.19.0` for twelve advisories of 2026-09-30, seven of them high. Each one patches at 1.20.0, for
+    example GHSA-3pq3-5fj3-cg6v, GHSA-m8m8-qj5v-23w3 and GHSA-x97p-jq2g-jp4f.
+-   **Drop when:** No transitive parent asks for an axios version below 1.20.0. Keep this entry and
     the direct dependency at the same version.
 
 #### `lodash: ^4.18.0` → 4.18.1
@@ -151,32 +154,37 @@ version on 2026-08-06.
 -   **Fixes:** GHSA-r5fr-rjxr-66jc (`>= 4.0.0, <= 4.17.23`). The patch is in 4.18.0.
 -   **Drop when:** All parents ask for `lodash@^4.18.0` or a later version.
 
-#### `qs: ^6.15.3` → 6.15.3
+#### `qs: ^6.16.0` → 6.16.1
 
 -   **Why:** The DHIS2 chain and the axios chain ask for `~6.5.2`, `6.9.7` and `^6.12.3`. The previous
     entry held all of them at the exact version `6.14.2`. That version is in the affected range below.
--   **Fixes:** GHSA-q8mj-m7cp-5q26 (`>= 6.11.1, <= 6.15.1`). The patch is in 6.15.2.
+-   **Fixes:** GHSA-q8mj-m7cp-5q26 (`>= 6.11.1, <= 6.15.1`). The patch is in 6.15.2. On 2026-10-27
+    the entry moved from `^6.15.3` for GHSA-x5fp-wj9c-mxmx (`>= 6.14.2, <= 6.15.3`) and
+    GHSA-4mjr-xmp4-gh2g (`< 6.16.0`). Both are medium, and both patch at 6.16.0.
 -   **Verified:** `@eyeseetea/d2-api` uses `qs` at run time. The test suite and a production build
-    both pass with version 6.15.3.
--   **Drop when:** All parents ask for `qs@^6.15.2` or a later version.
+    both pass with version 6.16.1.
+-   **Drop when:** All parents ask for `qs@^6.16.0` or a later version.
 
-#### `brace-expansion: ^1.1.18` → 1.1.18
+#### `brace-expansion: ^1.1.21` → 1.1.21
 
 -   **Why:** The `minimatch@3.x` chain comes from the eslint 7 tool set. It asks for
     `brace-expansion@^1.1.7`. That range already permits the patched release. Thus this entry records
     the requirement. It does not change a version.
 -   **Fixes:** GHSA-mh99-v99m-4gvg. The advisory has four ranges. The applicable range is `< 1.1.17`.
-    The patch is in 1.1.17.
+    The patch is in 1.1.17. On 2026-10-27 the entry moved from `^1.1.18` for GHSA-6j4f-fj2g-mc7p
+    (high, `< 1.1.19`), GHSA-qhr7-859c-m2p7 (high, `< 1.1.20`) and GHSA-q2hr-2g5m-vwhr (`< 1.1.21`).
 -   **⚠️ Do not change this entry to version 5.** brace-expansion 5 exports a named binding `expand`.
     `minimatch@3` uses `const expand = require("brace-expansion")`. eslint then stops with the message
     `TypeError: expand is not a function`. We tried this change on 2026-07-30 and removed it.
 -   **Drop when:** The eslint 7 tool set no longer uses the `minimatch@3.x` line.
 
-#### `handlebars: ^4.7.9` → 4.7.9
+#### `handlebars: ^4.7.10` → 4.7.10
 
 -   **Why:** `@dhis2/d2-i18n-generate` asks for `handlebars@^4.0.11`.
 -   **Fixes:** GHSA-xjpj-3mr7-gcpf, GHSA-xhpv-hc6g-r9c6 and GHSA-9cx6-37pm-9jff (all
-    `>= 4.0.0, <= 4.7.8`). The patch is in 4.7.9.
+    `>= 4.0.0, <= 4.7.8`). The patch is in 4.7.9. On 2026-10-27 the entry moved from `^4.7.9` for
+    GHSA-p8wg-vrv2-v86f (critical), GHSA-8r5x-fm3f-whwj (critical) and GHSA-xw65-4hp5-5hc7. All three
+    include 4.7.9 and patch at 4.7.10.
 -   **Verified:** `yarn localize` writes the locale files.
 -   **Drop when:** The project no longer uses the `@dhis2/d2-i18n-*` tools.
 
@@ -260,10 +268,11 @@ version on 2026-08-06.
 -   **Fixes:** GHSA-73rr-hh4g-fpgx (**low**, `>= 4.0.0, < 4.0.4`). The patch is in 4.0.4.
 -   **Drop when:** `ts-node` asks for `diff@^4.0.4` or a later version.
 
-#### `js-yaml: ^3.15.0` → 3.15.1
+#### `js-yaml: ^3.15.2` → 3.15.2
 
 -   **Why:** `eslint` and `@eslint/eslintrc` ask for `js-yaml@^3.13.1`.
--   **Fixes:** GHSA-52cp-r559-cp3m (`>= 3.0.0, < 3.15.0`). The patch is in 3.15.0.
+-   **Fixes:** GHSA-52cp-r559-cp3m (`>= 3.0.0, < 3.15.0`). The patch is in 3.15.0. On 2026-10-27 the
+    entry moved from `^3.15.0` for GHSA-2883-xcg3-v3hh (high, `>= 3.0.0, < 3.15.2`).
 -   **Drop when:** The eslint 7 tool set no longer uses the js-yaml 3.x line.
 
 #### `node-gettext: ^3.0.1` → 3.0.1
@@ -278,8 +287,8 @@ version on 2026-08-06.
 
 #### `postcss: ^8.5.18` → 8.5.26
 
--   **Why:** Three parents ask for `postcss@^8.4.x` or `^8.5.x`: `vite`, the `vite` below `vitest`,
-    and `rtlcss`. Those ranges gave a version below the patch.
+-   **Why:** Two parents ask for `postcss@^8.4.x` or `^8.5.x`: `vite` and `rtlcss`. Those ranges gave
+    a version below the patch. (A second `vite` below `vitest` asked too, until 2026-10-27.)
 -   **Fixes:** GHSA-r28c-9q8g-f849 (`<= 8.5.17`). The patch is in 8.5.18.
 -   **Drop when:** All parents ask for `postcss@^8.5.18` or a later version.
 
@@ -292,8 +301,8 @@ version on 2026-08-06.
 
 #### `esbuild: ^0.28.1` → 0.28.1
 
--   **Why:** This entry gives one esbuild binary to `vite` and to the `vite` below `vitest`. esbuild
-    supplies a Go binary. The Syft scan reports the Go standard library in that binary as a separate
+-   **Why:** `vite@6` asks for `esbuild@^0.25.0`. This entry moves it to 0.28.1. Until 2026-10-27 it
+    also gave the same binary to a second `vite` below `vitest`. esbuild supplies a Go binary. The Syft scan reports the Go standard library in that binary as a separate
     component. Older esbuild releases contain an older Go standard library, which has its own
     findings.
 -   **Fixes:** the `stdlib` findings that the Syft scan reports for
@@ -303,7 +312,7 @@ version on 2026-08-06.
 -   **Related:** esbuild 0.28 does not build for Safari 14.0. `vite.config.ts` sets `ESBUILD_TARGET`
     to the default Vite "modules" target, but with `safari14.1` in place of `safari14`. Do not remove
     that constant while this entry is in the file.
--   **Drop when:** Both `vite` major versions in the tree ask for esbuild 0.28.1 or a later version.
+-   **Drop when:** `vite` asks for esbuild 0.28.1 or a later version.
 
 #### `glob-parent: ^5.1.2` → 5.1.2
 
@@ -342,7 +351,7 @@ records a minimum version that the tree already meets.
 | `minimatch: ^3.1.4`        | 3.1.5    | GHSA-23c5-xmqv-rm74 (`< 3.1.4`). Regular expression attack. | The eslint 7 tool set no longer uses the 3.x line.          |
 | `minimist: ^1.2.6`         | 1.2.8    | GHSA-xvch-5gv4-984h (critical, `< 1.2.6`).                  | All parents ask for `^1.2.6` or later.                      |
 | `path-parse: ^1.0.7`       | 1.0.7    | CVE-2021-23343. No current advisory.                        | All parents ask for `^1.0.7` or later.                      |
-| `moment: ^2.29.4`          | 2.30.1   | GHSA-wc69-rhjr-hc9g (`>= 2.18.0, < 2.29.4`).                | The application and `@date-io/moment` no longer use moment. |
+| `moment: ^2.31.0`          | 2.31.0   | GHSA-wc69-rhjr-hc9g, GHSA-4p3w-j4w9-5jqw (`< 2.31.0`).      | The application and `@date-io/moment` no longer use moment. |
 | `ua-parser-js: ^0.7.33`    | 0.7.41   | GHSA-fhg7-m89q-25r3 (`>= 0.7.30, < 0.7.33`).                | All parents ask for `^0.7.33` or later.                     |
 | `uglify-js: ^3.14.3`       | 3.19.3   | GHSA-c9f4-xj24-8jqx (`< 2.6.0`), GHSA-34r7-q49f-h37c.       | The `d2` and `d2-manifest` tools are no longer in the tree. |
 | `@babel/runtime: ^7.26.10` | 7.29.7   | CVE-2025-27789. No current advisory.                        | All parents ask for `^7.26.10` or later.                    |
@@ -383,6 +392,19 @@ records a minimum version that the tree already meets.
     the full 2.x line, together with `globby`, `fast-glob` and `micromatch`. It also removes the
     difference between the two scans. Remove the 4.x entries when the Vite tools ask for
     `picomatch@^4.0.4` or a later version.
+
+#### `vitest/vite: ^6.4.4` → 6.4.5
+
+-   **Why:** vitest 4 declares `vite@^6.0.0 || ^7.0.0 || ^8.0.0` two times: as a dependency and as a
+    peer dependency. Yarn 1 resolves the dependency to the newest major version, vite 8, in
+    `node_modules/vitest/node_modules`. The install then stops with the message
+    `Invariant Violation: could not find a copy of vite to link`. This entry gives vitest the same
+    `vite` as `devDependencies.vite`. `vitest` is a direct dependency, so Yarn 1 applies this
+    per-parent entry. Read the per-parent warning in [Conventions](#conventions).
+-   **Fixes:** the install. It also keeps one `vite` in the tree, so the `esbuild` and `postcss`
+    entries have one parent to correct.
+-   **Drop when:** `devDependencies.vite` is the newest major version that vitest accepts, or Yarn 1 is
+    no longer the package manager. Keep this entry and `devDependencies.vite` at the same minimum.
 
 ---
 
@@ -458,8 +480,14 @@ these findings**. The packages are not the software in the advisory. Do not add 
 | `asn1@0.2.4`                                     | `asn1`                                                                | Perl `Convert::ASN1`                                         |
 | `through@2.3.8`                                  | `through`                                                             | the Rust `through` crate                                     |
 | `slash@3.0.0`                                    | `slash`                                                               | Slashdot Slashcode                                           |
-| `source-map@0.6.1`                               | `source-map`                                                          | `badjs-sourcemap-server`                                     |
+| `source-map@0.5.7`, `source-map@0.6.1`           | `source-map`                                                          | `badjs-sourcemap-server`                                     |
 | `encoding@0.1.12`                                | `encoding`                                                            | `detect-character-encoding`                                  |
+| `util@0.12.5`                                    | `util`                                                                | Indeed Engineering `util` (Java)                             |
+| `yargs@16.0.3`, `yargs-parser@15.0.0`            | `@types/yargs`, `@types/yargs-parser`                                 | `yargs-parser`. The type stubs contain no parser.            |
+| `lab@4.0.0-alpha.60`                             | `@material-ui/lab`                                                    | Arista EOS                                                   |
+| `material-ui@0.20.2`, `material-ui@0.21.9`       | `@types/material-ui`                                                  | `react-admin`                                                |
+| `tag@6.x`, `portal@6.x`                          | `@dhis2-ui/tag`, `@dhis2-ui/portal`                                   | different products                                           |
+| `nanoid@3.3.18` (Syft scan)                      | `nanoid`                                                              | CVE-2026-67214, which says "before 3.3.16". 3.3.18 is patched. |
 
 If the workflow fails only on findings from this table, speak to the scanner administrator. Ask that
 person to stop the approximate CPE comparison. As an alternative, ask that person to mark each
@@ -474,6 +502,14 @@ instances, and the entries correct all 63.
 The CI threshold counts new instances only. It compares the branch with the base branch. These
 incorrect findings are on both sides of that comparison. Thus they do not stop the workflow, but they
 do make the total count large.
+
+**⚠️ When the base branch has no scan, these findings stop the workflow.** The Berry scan of
+2026-08-26 (commit `fa3a700`) gave 354 instances: 86 critical and 138 high. The base branch
+`development` had no scan, so the workflow counted each instance as new (`baseline_missing: true`).
+All instances except three are in the table above. The three others are `elliptic` (accepted),
+`eslint` and `cross-fetch` (both withdrawn). The scan of 2026-08-24 matched most components by package
+URL and gave 103 instances for a similar tree. Thus the change in the count came from the scanner, and
+not from this repository.
 
 ---
 
@@ -494,6 +530,8 @@ gh api advisories/<GHSA> --jq '.withdrawn_at // "not withdrawn"'
 | `GHSA-qmq6-f8pr-cx5x` | `uuid`    | 2026-05-05 | A duplicate advisory with low severity. It caused a `uuid: 14.0.1` entry on 2026-07-30. That entry forced a major ES module on a CommonJS parent. On 2026-08-06 we replaced it with `^11.1.1`. The entry left the file on 2026-08-25 with `cypress`. |
 | `GHSA-p5wg-g6qr-c7cg` | `eslint`  | 2026-02-03 | To correct it, you must upgrade eslint by one major version. That upgrade corrects nothing.                                                                                                                             |
 | `GHSA-7gc6-qh9x-w6h8` | `cross-fetch` | 2025-10-08 | Found on 2026-08-21 against `cross-fetch@3.1.4`. The declared range permits the patched 3.1.5, but the advisory is withdrawn. Do not add an entry.                                                              |
+| `GHSA-vfj7-8cjw-p6xm` | `braces`  | 2026-10-23 | Found on 2026-10-27 against `braces@3.0.3`. The advisory recorded no patched version. Do not change the `braces` entry for it.                                                                                         |
+| `GHSA-hp3w-g68c-fv3c` | `sprintf-js` | 2026-10-22 | Found on 2026-10-27 against `sprintf-js@1.0.3`, below `@dhis2/d2-i18n-extract` → `argparse`. The advisory recorded no patched version. Do not add an entry.                                                    |
 
 ---
 
@@ -525,6 +563,19 @@ package findings occurred. 14 of them needed no entry:
 The `@babel/core` row also needed a change to `devDependencies`. Read
 [Use a minimum version](#use-a-minimum-version-not-an-exact-version). The other rows changed the
 lockfile only.
+
+On 2026-10-27 the same comparison found five more packages that needed no entry:
+
+| Package            | Before | After  | Parent                              | Advisory                                         |
+| ------------------ | ------ | ------ | ----------------------------------- | ------------------------------------------------ |
+| `browserslist`     | 4.24.4 | 4.29.5 | `@babel/helper-compilation-targets` | GHSA-73wf-gq98-2v4g, GHSA-c83g-rgw3-j3cx (high)  |
+| `fast-uri`         | 3.1.5  | 3.1.9  | `eslint` → `table` → `ajv`          | GHSA-5jgf-p345-68v8 and six more (five high)     |
+| `follow-redirects` | 1.16.0 | 1.16.2 | `axios`                             | GHSA-8r9p-f939-6h3c, GHSA-q3jh-wrc6-jgq8 (high)  |
+| `pbkdf2`           | 3.1.5  | 3.1.7  | `node-stdlib-browser` (polyfill)    | GHSA-477h-4r7f-fvrx                              |
+| `source-map-js`    | 1.2.1  | 1.2.2  | `vite` → `postcss`                  | GHSA-68fv-2mgg-jv7q (high)                       |
+
+The `browserslist` change also moved its data packages: `caniuse-lite`, `electron-to-chromium`,
+`node-releases` and `update-browserslist-db`, and it added `baseline-browser-mapping`.
 
 To find these findings, read the resolved versions from `yarn.lock`, then do this command for each
 one:
@@ -560,6 +611,41 @@ Each condition below shows that an entry is no longer correct:
     nothing. Remove it.
 -   The advisory moved. An advisory can change its patched version after you write the entry. Compare
     the entry with the current data from `gh api advisories/<GHSA>`, and not with this file.
+
+## Verification done on 2026-10-27
+
+The last CI scan was on 2026-08-26. We compared each of the 1128 resolved versions in `yarn.lock`
+with the GitHub Advisory Database again. The tree includes `@eyeseetea/d2-api@1.21.0` from the DHIS2
+2.43 support change. 53 active findings occurred in 16 resolved versions. All of them were published
+after the CI scan. (The comparison also gave `elliptic` and the withdrawn advisories below.) We
+corrected them in three groups:
+
+1. Six entries moved up: `axios` (and `dependencies.axios`), `handlebars`, `brace-expansion`,
+   `js-yaml`, `moment` and `qs`. Read each entry.
+2. Five packages needed the lockfile only. Read
+   [A finding can be in the lockfile only](#a-finding-can-be-in-the-lockfile-only).
+3. `devDependencies.vitest` moved from `^3.2.6` to `^4.1.12`, and `devDependencies.vite` moved from
+   `^6.4.3` to `^6.4.4`. This change corrects four groups of findings:
+    - `tinypool@1.1.1`: GHSA-5gmw-xhrv-c9v3 and GHSA-85c8-ppgw-ccpr, both **critical**. vitest 3
+      asks for `tinypool@^1.1.1`, and the patches are in the 2.x line only. vitest 4 does not use
+      tinypool. Thus the package left the tree.
+    - `vitest` and `@vitest/mocker@3.2.7`: GHSA-82fw-gwwq-j7x9 and GHSA-qxg6-89mg-rqv8. The patches
+      are in 4.1.11 and 4.1.12.
+    - `vite@6.4.3` and `vite@7.3.6`: GHSA-587h-7wmj-h5pm (high) and four more. The patches are in
+      6.4.4 and 7.3.7. vitest 4 does not use `vite-node`, so the `vite@7` copy left the tree.
+    - Read the new `vitest/vite` entry. Without it, Yarn 1 cannot install vitest 4.
+
+The test configuration in `vite.config.ts` needed no change for vitest 4.
+
+After the change, 1120 resolved versions give five findings: `elliptic` (accepted) and four withdrawn
+advisories (`braces`, `cross-fetch`, `eslint` and `sprintf-js`). Trivy gives no finding for the same
+lockfile.
+
+These commands all pass: `yarn install --frozen-lockfile`, `tsc --noEmit`, `yarn lint`, `yarn test`
+(864 tests), `yarn localize` (no change to the locale files) and `yarn build-folder`.
+
+**Not verified:** the Dependency-Track scan (the CI workflow must run again), the start-up of the
+application, and a manual test of the user functions.
 
 ## Verification done on 2026-08-25
 
