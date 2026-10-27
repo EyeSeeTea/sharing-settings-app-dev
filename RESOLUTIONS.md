@@ -569,7 +569,7 @@ On 2026-10-27 the same comparison found five more packages that needed no entry:
 | Package            | Before | After  | Parent                              | Advisory                                         |
 | ------------------ | ------ | ------ | ----------------------------------- | ------------------------------------------------ |
 | `browserslist`     | 4.24.4 | 4.29.5 | `@babel/helper-compilation-targets` | GHSA-73wf-gq98-2v4g, GHSA-c83g-rgw3-j3cx (high)  |
-| `fast-uri`         | 3.1.5  | 3.1.9  | `eslint` → `table` → `ajv`          | GHSA-5jgf-p345-68v8 and six more (five high)     |
+| `fast-uri`         | 3.1.5  | 3.1.9  | `eslint` → `table` → `ajv`          | GHSA-5jgf-p345-68v8 and nine more (five high)    |
 | `follow-redirects` | 1.16.0 | 1.16.2 | `axios`                             | GHSA-8r9p-f939-6h3c, GHSA-q3jh-wrc6-jgq8 (high)  |
 | `pbkdf2`           | 3.1.5  | 3.1.7  | `node-stdlib-browser` (polyfill)    | GHSA-477h-4r7f-fvrx                              |
 | `source-map-js`    | 1.2.1  | 1.2.2  | `vite` → `postcss`                  | GHSA-68fv-2mgg-jv7q (high)                       |
