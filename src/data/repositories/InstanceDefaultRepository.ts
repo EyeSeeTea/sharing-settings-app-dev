@@ -1,4 +1,4 @@
-import { D2Api } from "@eyeseetea/d2-api/2.34";
+import { D2Api } from "@eyeseetea/d2-api/2.41";
 import { FutureData } from "../../domain/entities/Future";
 import { User } from "../../domain/entities/User";
 import { InstanceRepository } from "../../domain/repositories/InstanceRepository";
@@ -29,6 +29,9 @@ export class InstanceDefaultRepository implements InstanceRepository {
                         id: true,
                         displayName: true,
                         userGroups: { id: true, name: true },
+                        // DHIS2 >= 43 flattens userCredentials fields into User; userCredentials is kept for older versions
+                        username: true,
+                        userRoles: { id: true, name: true, authorities: true },
                         userCredentials: {
                             username: true,
                             userRoles: { id: true, name: true, authorities: true },
@@ -39,7 +42,8 @@ export class InstanceDefaultRepository implements InstanceRepository {
                 id: user.id,
                 name: user.displayName,
                 userGroups: user.userGroups,
-                ...user.userCredentials,
+                username: user.username ?? user.userCredentials?.username ?? "",
+                userRoles: user.userRoles ?? user.userCredentials?.userRoles ?? [],
             }))
         );
     }
