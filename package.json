@@ -9,6 +9,7 @@
         "type": "git",
         "url": "git+https://github.com/eyeseetea/sharing-settings-app.git"
     },
+    "packageManager": "yarn@4.15.0",
     "resolutions": {
         "ansi-regex": "^5.0.1",
         "axios": "^1.20.0",
@@ -139,9 +140,10 @@
         "prettify": "prettier \"./**/*.{js,jsx,json,css,ts,tsx}\" --write",
         "extract-pot": "yarn d2-i18n-extract -p src/ -o i18n/",
         "localize": "yarn update-po && d2-i18n-generate -n sharing-settings-app -p ./i18n/ -o ./src/locales/",
-        "update-po": "yarn extract-pot && for pofile in i18n/*.po; do msgmerge --backup=off -U $pofile i18n/en.pot; done",
+        "update-po": "yarn extract-pot && find i18n/ -name '*.po' -exec msgmerge --backup=off -U {} i18n/en.pot \\;",
         "manifest": "d2-manifest package.json build/manifest.webapp",
-        "prepare": "husky install"
+        "postinstall": "yarn localize",
+        "prepare": "corepack enable 2>/dev/null || true && husky install"
     },
     "manifest.webapp": {
         "name": "Sharing Settings",
