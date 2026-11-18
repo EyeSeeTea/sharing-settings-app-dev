@@ -142,6 +142,7 @@
         "localize": "yarn update-po && d2-i18n-generate -n sharing-settings-app -p ./i18n/ -o ./src/locales/",
         "update-po": "yarn extract-pot && find i18n/ -name '*.po' -exec msgmerge --backup=off -U {} i18n/en.pot \\;",
         "manifest": "d2-manifest package.json build/manifest.webapp",
+        "postinstall": "yarn localize",
         "prepare": "corepack enable 2>/dev/null || true && husky install"
     },
     "manifest.webapp": {
