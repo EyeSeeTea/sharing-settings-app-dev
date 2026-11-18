@@ -375,6 +375,8 @@ records a minimum version that the tree already meets.
     version on parents that cannot use it. picomatch 4 exports named ES module bindings, and
     `micromatch@4` does not expect them.
 -   **Fixes:** GHSA-c2c7-rcm5-vvqj (high). The patched versions are 2.3.2 and 4.0.4.
+    GHSA-fc5q-39xc-vjpf (2026-10-19) has no patched version: read
+    [Accepted findings](#accepted-findings-with-no-correction-available).
 -   **⚠️ The two 2.x entries have no effect in this repository.** Read the per-parent warning in
     [Conventions](#conventions). `fast-glob` and `micromatch` are transitive parents. Thus Yarn 1
     ignores both entries. We verified this on 2026-08-06 with `yarn why picomatch`. We also read
@@ -413,7 +415,8 @@ records a minimum version that the tree already meets.
 We found three findings on 2026-08-21. We compared each resolved version in the lockfile with the
 GitHub Advisory Database. No entry can correct them. Each package is a development tool. No package
 below is in the application bundle. Two of the three findings were below `cypress`. They left the
-tree on 2026-08-25 with that dependency. One finding stays.
+tree on 2026-08-25 with that dependency. One finding stayed. A second finding was added on
+2026-11-18 (`picomatch`, below).
 
 ⚠️ Keep this section. When you accept a finding, record it here. Give this data for each finding: the
 full chain, the reason for no correction, the place where the code runs, the reachability of the
@@ -426,6 +429,32 @@ management approval.
 -   **Chain:** the browser polyfill chain below `vite-plugin-node-stdlib-browser`.
 -   **Why no correction:** the advisory includes each published version. Version 6.6.1 is `latest`.
 -   **Examine again when:** an elliptic release above 6.6.1 occurs.
+
+#### `picomatch@2.3.2` and `picomatch@4.0.5` — GHSA-fc5q-39xc-vjpf (high, CVSS 7.5)
+
+-   **Finding:** ReDoS through single-branch repeated extglobs. A glob such as `+(*)` makes
+    `analyzeRepeatedExtglob` in `lib/parse.js` skip the check, and the regular expression backtracks
+    exponentially. The advisory was published on 2026-10-19. Dependency-Track reports two instances,
+    one for each resolved version.
+-   **Chain:** `picomatch@2.3.2` comes from `@typescript-eslint/*`, then `globby`, then `fast-glob`
+    and `micromatch`. `picomatch@4.0.5` comes from `vite`, `vitest`, `vite-plugin-checker`,
+    `tinyglobby` and `@rollup/pluginutils`.
+-   **Why no correction:** the vulnerable range is `<= 4.0.7`. It includes every published version
+    of every line (2.x, 3.x and 4.x). Version 4.0.7, published on 2026-08-24, is `latest`, and the
+    advisory has no first patched version. We checked the list of versions in npm on 2026-11-18. No
+    `yarn up -R`, no upgrade of a parent and no per-parent entry can give a version outside the
+    range. The two scans agree: `yarn npm audit -R` and Dependency-Track both report it.
+-   **Where the code runs:** only on the developer machine and in CI, in the lint (`eslint`) and in
+    `vite`, `vitest` and the build. A search of `build/` for `picomatch` finds nothing: the package is
+    not in the application bundle.
+-   **Reachability:** the exploit needs an attacker to control a glob pattern. The patterns in these
+    tools come from the configuration of this repository (ESLint, Vite, Vitest) and not from runtime
+    or user input. This is our assessment and not a proof.
+-   **Not a cause of the 2.x and 4.x floors:** the seven per-parent entries above stay as they are.
+    They fix GHSA-c2c7-rcm5-vvqj, a different advisory.
+-   **Examine again when:** a `picomatch` release above 4.0.7 is published. Then run
+    `yarn up -R picomatch`, raise the floors in the seven entries above and remove this entry. The
+    2.x line leaves the tree when `@typescript-eslint` goes above major version 4.
 
 ---
 
